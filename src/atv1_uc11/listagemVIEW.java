@@ -1,5 +1,5 @@
-
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 
@@ -9,8 +9,7 @@ public class listagemVIEW extends javax.swing.JFrame {
      * Creates new form listagemVIEW
      */
     public listagemVIEW() {
-        initComponents();
-        listarProdutos();
+        initComponents(); 
     }
 
     /**
@@ -128,17 +127,48 @@ public class listagemVIEW extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        String id = id_produto_venda.getText();
-        
-        ProdutosDAO produtosdao = new ProdutosDAO();
-        
-        produtosdao.venderProduto(Integer.parseInt(id));
-        listarProdutos();
+        int id;
+    try {
+        id = Integer.parseInt(id_produto_venda.getText());
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "ID inválido.");
+        return;
+    }
+
+    ProdutosDAO dao = new ProdutosDAO();
+    ProdutosDTO produto = dao.listarProdutoPorId(id);
+
+    DefaultTableModel modelo = (DefaultTableModel) listaProdutos.getModel();
+    modelo.setRowCount(0); // Limpa a tabela
+
+    if (produto != null) {
+        modelo.addRow(new Object[]{
+            produto.getId(),
+            produto.getNome(),
+            produto.getValor(),
+            produto.getStatus()
+        });
+    } else {
+        JOptionPane.showMessageDialog(this, "Produto não encontrado.");
+    }
+            
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendasActionPerformed
-        //vendasVIEW vendas = new vendasVIEW(); 
-       // vendas.setVisible(true);
+         ProdutosDAO dao = new ProdutosDAO();
+    ArrayList<ProdutosDTO> lista = dao.listarTodosProdutos();
+
+    DefaultTableModel modelo = (DefaultTableModel) listaProdutos.getModel();
+    modelo.setRowCount(0); // Limpa a tabela
+
+    for (ProdutosDTO p : lista) {
+        modelo.addRow(new Object[]{
+            p.getId(),
+            p.getNome(),
+            p.getValor(),
+            p.getStatus()
+        });
+    }
     }//GEN-LAST:event_btnVendasActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
